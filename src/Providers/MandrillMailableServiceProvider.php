@@ -2,7 +2,7 @@
 
 namespace Homicity\MandrillMailable\Providers;
 
-use Homicity\MandrillMailable\Tests\Unit\MandrillMailable;
+use Homicity\MandrillMailable\MandrillMailer;
 use Illuminate\Mail\Mailer;
 use Illuminate\Support\ServiceProvider;
 
@@ -31,9 +31,9 @@ class MandrillMailableServiceProvider extends ServiceProvider
             return $mandrill->messages;
         });
 
-//        Mailer::macro('mandrill', function () {
-//            return new MandrillMailable();
-//        });
+        Mailer::macro('mandrill', function () {
+           return new MandrillMailer();
+        });
     }
 
     /**
