@@ -6,10 +6,12 @@ use Homicity\MandrillMailable\Facades\MandrillMessage;
 
 class MandrillMailer
 {
-    /**
-     * @var \Mandrill
-     */
-    public $mandrillMessage;
+    private $message = [
+        'to' => [
+            'name'  => '',
+            'email' => '',
+        ],
+    ];
 
     /**
      * @var
@@ -54,18 +56,46 @@ class MandrillMailer
 
     }
 
-    /**
-     * Email address to send message to
-     *
-     * @param $to
-     * @return $this
-     */
-    public function to($to)
-    {
-        $this->to = $to;
 
-        return $this;
+    public function __call($method, $args)
+    {
+        // $this->to()->name();
+
+        if ($method == 'to') {
+            $this->message['to']['email'] = $args[0];
+            return $this;
+        }
+
+        if ($method == 'name') {
+            $this->message['to']['name'] = $args[0];
+            return $this;
+        }
+
+        if (array_key_exists(snake_case($method), $this->message)) {
+            return $this->message[$method] = $args[0];
+            return $this;
+        }
     }
+
+    public function __get($attribute)
+    {
+        if ($attribute == 'message') {
+            return $this->message;
+        }
+    }
+
+//    /**
+//     * Email address to send message to
+//     *
+//     * @param $to
+//     * @return $this
+//     */
+//    public function to($to)
+//    {
+//        $this->to = $to;
+//
+//        return $this;
+//    }
 
     /**
      * Name of recipient of message
@@ -157,22 +187,25 @@ class MandrillMailer
      */
     public function send()
     {
-        $message = array(
-            'subject' => $this->subject,
-            'from_email' => $this->from,
-            'from_name' => $this->fromName,
-            'to' => array(
-                array(
+        // $this->from();
+        // $this->fromName();
+        // $this->fromEmail();
+        $message = [
+            'subject'           => $this->subject,
+            'from_email'        => $this->from,
+            'from_name'         => $this->fromName,
+            'to'                => [
+                [
                     'email' => $this->to,
-                    'name' => $this->name,
-                )
-            ),
-            'important' => false,
-            'merge' => true,
-            'merge_language' => 'handlebars',
+                    'name'  => $this->name,
+                ],
+            ],
+            'important'         => false,
+            'merge'             => true,
+            'merge_language'    => 'handlebars',
             'global_merge_vars' => $this->mergeTags,
-            'merge_vars' => $this->mergeTags,
-        );
+            'merge_vars'        => $this->mergeTags,
+        ];
 
         return MandrillMessage::sendTemplate(
             $this->template,

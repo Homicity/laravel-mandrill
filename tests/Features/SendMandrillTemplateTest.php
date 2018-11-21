@@ -2,6 +2,7 @@
 
 namespace Homicity\MandrillMailable\Tests\Features;
 
+use Homicity\MandrillMailable\Facades\MandrillMessage;
 use Homicity\MandrillMailable\Tests\TestCase;
 use Illuminate\Support\Facades\Mail;
 
@@ -10,6 +11,8 @@ class SendMandrillTemplateTest extends TestCase
     /** @test */
     public function it_sends_a_mandrill_template()
     {
+        MandrillMessage::shouldReceive('sendTemplate')->andReturn([['status' => 'sent']]);
+
         $response = Mail::mandrill()
             ->to('lyonelz@gmail.com')
             ->name('lyonel')
@@ -20,9 +23,5 @@ class SendMandrillTemplateTest extends TestCase
             ->send();
 
         $this->assertTrue($response[0]['status'] == 'sent');
-
-        /**
-         * TODO: Test with a mockery facade
-         */
     }
 }
