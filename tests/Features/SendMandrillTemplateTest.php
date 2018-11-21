@@ -14,12 +14,12 @@ class SendMandrillTemplateTest extends TestCase
         MandrillMessage::shouldReceive('sendTemplate')->andReturn([['status' => 'sent']]);
 
         $response = Mail::mandrill()
-            ->to('lyonelz@gmail.com')
-            ->name('lyonel')
-            ->template('email-request')
-            ->subject('test')
-            ->from('lyonel@homicity.com')
-            ->fromName('Lyonel Homicity')
+            ->to('test@test.com')
+            ->name('Testing')
+            ->templateName('test-template')
+            ->fromEmail('test2@test.com')
+            ->fromName('Testing From')
+            ->subject('Testing')
             ->send();
 
         $this->assertTrue($response[0]['status'] == 'sent');

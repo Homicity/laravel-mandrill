@@ -6,61 +6,74 @@ use Homicity\MandrillMailable\Facades\MandrillMessage;
 
 class MandrillMailer
 {
+    /**
+     * @var array
+     */
     private $message = [
-        'to' => [
-            'name'  => '',
-            'email' => '',
-        ],
+        'subject'           => '',
+        'from_email'        => '',
+        'from_name'         => '',
+        'to'                => [
+                                'email' => '',
+                                'name' => '',
+                                'type' => 'to'
+                            ],
+        'important'         => false,
+        'merge'             => true,
+        'merge_language'    => 'handlebars',
+        'global_merge_vars' => [],
+        'merge_vars'        => [],
+        'tags'              => [],
     ];
 
     /**
      * @var
      */
-    private $to;
+    private $template_name;
 
     /**
      * @var
      */
-    private $name;
+    private $template_content;
 
     /**
      * @var
      */
-    private $template;
+    private $async;
 
     /**
      * @var
      */
-    private $subject;
+    private $ip_pool;
 
     /**
      * @var
      */
-    private $from;
+    private $send_at;
 
-    /**
-     * @var
-     */
-    private $fromName;
-
-    /**
-     * @var
-     */
-    private $mergeTags;
 
     /**
      * MandrillMailer constructor.
      */
     public function __construct()
     {
-
+        // Set the default values
+        $this->message['from_email'] = config('mandrill.from_email');
+        $this->message['from_name'] = config('mandrill.from_name');
+        $this->send_at = date('Y-m-d H:i:s');
+        $this->ip_pool = '';
+        $this->async = false;
     }
 
-
+    /**
+     * Magically set all attributes
+     *
+     * @param $method
+     * @param $args
+     * @return $this
+     */
     public function __call($method, $args)
     {
-        // $this->to()->name();
-
         if ($method == 'to') {
             $this->message['to']['email'] = $args[0];
             return $this;
@@ -72,112 +85,27 @@ class MandrillMailer
         }
 
         if (array_key_exists(snake_case($method), $this->message)) {
-            return $this->message[$method] = $args[0];
+            $this->message[snake_case($method)] = $args[0];
+            return $this;
+        }
+
+        if(property_exists($this, snake_case($method))){
+            $this->{snake_case($method)} = $args[0];
             return $this;
         }
     }
 
+    /**
+     * Magically get the message array
+     *
+     * @param $attribute
+     * @return array
+     */
     public function __get($attribute)
     {
-        if ($attribute == 'message') {
-            return $this->message;
+        if(property_exists($this, snake_case($attribute))) {
+            return $this->{snake_case($attribute)};
         }
-    }
-
-//    /**
-//     * Email address to send message to
-//     *
-//     * @param $to
-//     * @return $this
-//     */
-//    public function to($to)
-//    {
-//        $this->to = $to;
-//
-//        return $this;
-//    }
-
-    /**
-     * Name of recipient of message
-     *
-     * @param $name
-     * @return $this
-     */
-    public function name($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Merge Tags for the dynamic content of the message
-     * format [
-     *      'name'      => 'name of merge tag',
-     *      'content'   => 'content of the merge tag'
-     * ]
-     *
-     *
-     * @param array $mergeTags
-     * @return MandrillMailer
-     */
-    public function mergeTags(array $mergeTags = [])
-    {
-        $this->mergeTags = $mergeTags;
-
-        return $this;
-    }
-
-    /**
-     * Name of the mandrill template
-     *
-     * @param $template
-     * @return $this
-     */
-    public function template($template)
-    {
-        $this->template = $template;
-
-        return $this;
-    }
-
-    /**
-     * Subject of the message
-     *
-     * @param $subject
-     * @return $this
-     */
-    public function subject($subject)
-    {
-        $this->subject = $subject;
-
-        return $this;
-    }
-
-    /**
-     * Email address of sender
-     *
-     * @param $from
-     * @return $this
-     */
-    public function from($from)
-    {
-        $this->from = $from ?? config('mandrill.from_email');
-
-        return $this;
-    }
-
-    /**
-     * Name of the sender
-     *
-     * @param $fromName
-     * @return $this
-     */
-    public function fromName($fromName)
-    {
-        $this->fromName = $fromName ?? config('mandrill.from_name');
-
-        return $this;
     }
 
     /**
@@ -187,33 +115,13 @@ class MandrillMailer
      */
     public function send()
     {
-        // $this->from();
-        // $this->fromName();
-        // $this->fromEmail();
-        $message = [
-            'subject'           => $this->subject,
-            'from_email'        => $this->from,
-            'from_name'         => $this->fromName,
-            'to'                => [
-                [
-                    'email' => $this->to,
-                    'name'  => $this->name,
-                ],
-            ],
-            'important'         => false,
-            'merge'             => true,
-            'merge_language'    => 'handlebars',
-            'global_merge_vars' => $this->mergeTags,
-            'merge_vars'        => $this->mergeTags,
-        ];
-
         return MandrillMessage::sendTemplate(
-            $this->template,
-            $this->mergeTags,
-            $message,
-            false,
-            '',
-            date('Y-m-d H:i:s')
+            $this->template_name,
+            $this->template_content,
+            $this->message,
+            $this->async,
+            $this->ip_pool,
+            $this->send_at
         );
     }
 }
