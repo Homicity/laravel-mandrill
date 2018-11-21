@@ -11,53 +11,53 @@ class MandrillMailableTest extends TestCase
     public function it_sets_the_to_email()
     {
         $mailer = new MandrillMailer();
-        $mailer->to("test@example.com");
+        $mailer->to("john@example.com");
 
-        $this->assertTrue($mailer->message['to']['email'] == "test@example.com");
+        $this->assertTrue($mailer->message['to']['email'] == "john@example.com");
     }
 
     /** @test */
     public function it_sets_the_to_name()
     {
         $mailer = new MandrillMailer();
-        $mailer->name("joe");
+        $mailer->name("John Doe");
 
-        $this->assertTrue($mailer->message['to']['name'] == "joe");
+        $this->assertTrue($mailer->message['to']['name'] == "John Doe");
     }
 
     /** @test */
     public function it_sets_the_template_name()
     {
         $mailer = new MandrillMailer();
-        $mailer->templateName("test-template");
+        $mailer->templateName("Template name");
 
-        $this->assertTrue($mailer->templateName == "test-template");
+        $this->assertTrue($mailer->templateName == "Template name");
     }
 
     /** @test */
     public function it_sets_the_subject()
     {
         $mailer = new MandrillMailer();
-        $mailer->subject("test-subject");
+        $mailer->subject("Hello World");
 
-        $this->assertTrue($mailer->message['subject'] == "test-subject");
+        $this->assertTrue($mailer->message['subject'] == "Hello World");
     }
 
     /** @test */
     public function it_sets_the_from_name()
     {
         $mailer = new MandrillMailer();
-        $mailer->fromName("dirt");
+        $mailer->fromName("My Awesome Website");
 
-        $this->assertTrue($mailer->message['from_name'] == "dirt");
+        $this->assertTrue($mailer->message['from_name'] == "My Awesome Website");
     }
 
     /** @test */
     public function it_sets_the_from_email()
     {
         $mailer = new MandrillMailer();
-        $mailer->fromEmail("dirt@email.com");
+        $mailer->fromEmail("no-reply@example.com");
 
-        $this->assertTrue($mailer->message['from_email'] == "dirt@email.com");
+        $this->assertTrue($mailer->message['from_email'] == "no-reply@example.com");
     }
 }

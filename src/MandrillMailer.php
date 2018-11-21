@@ -7,49 +7,25 @@ use Homicity\MandrillMailable\Facades\MandrillMessage;
 class MandrillMailer
 {
     /**
+     * Message configurations.
+     *
      * @var array
      */
-    private $message = [
-        'subject'           => '',
-        'from_email'        => '',
-        'from_name'         => '',
-        'to'                => [
-                                'email' => '',
-                                'name' => '',
-                                'type' => 'to'
-                            ],
-        'important'         => false,
-        'merge'             => true,
-        'merge_language'    => 'handlebars',
-        'global_merge_vars' => [],
-        'merge_vars'        => [],
-        'tags'              => [],
-    ];
+    private $message;
 
     /**
-     * @var
+     * Mandrill template name.
+     *
+     * @var string
      */
     private $template_name;
 
     /**
+     *
+     *
      * @var
      */
     private $template_content;
-
-    /**
-     * @var
-     */
-    private $async;
-
-    /**
-     * @var
-     */
-    private $ip_pool;
-
-    /**
-     * @var
-     */
-    private $send_at;
 
 
     /**
@@ -57,12 +33,7 @@ class MandrillMailer
      */
     public function __construct()
     {
-        // Set the default values
-        $this->message['from_email'] = config('mandrill.from_email');
-        $this->message['from_name'] = config('mandrill.from_name');
-        $this->send_at = date('Y-m-d H:i:s');
-        $this->ip_pool = '';
-        $this->async = false;
+        $this->message = $this->getDefaultMessageStructure();
     }
 
     /**
@@ -89,7 +60,7 @@ class MandrillMailer
             return $this;
         }
 
-        if(property_exists($this, snake_case($method))){
+        if (property_exists($this, snake_case($method))) {
             $this->{snake_case($method)} = $args[0];
             return $this;
         }
@@ -103,7 +74,7 @@ class MandrillMailer
      */
     public function __get($attribute)
     {
-        if(property_exists($this, snake_case($attribute))) {
+        if (property_exists($this, snake_case($attribute))) {
             return $this->{snake_case($attribute)};
         }
     }
@@ -123,5 +94,30 @@ class MandrillMailer
             $this->ip_pool,
             $this->send_at
         );
+    }
+
+    /**
+     * The default message structure for mandrill templates.
+     *
+     * @return array
+     */
+    private function getDefaultMessageStructure()
+    {
+        return [
+            'subject'           => '',
+            'from_email'        => config('mandrill.from_email'),
+            'from_name'         => config('mandrill.from_name'),
+            'to'                => [
+                'email' => '',
+                'name'  => '',
+                'type'  => 'to',
+            ],
+            'important'         => false,
+            'merge'             => true,
+            'merge_language'    => 'handlebars',
+            'global_merge_vars' => [],
+            'merge_vars'        => [],
+            'tags'              => [],
+        ];
     }
 }
