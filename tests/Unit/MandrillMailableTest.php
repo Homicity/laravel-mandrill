@@ -13,7 +13,7 @@ class MandrillMailableTest extends TestCase
         $mailer = new MandrillMailer();
         $mailer->to("john@example.com");
 
-        $this->assertTrue($mailer->message['to']['email'] == "john@example.com");
+        $this->assertTrue($mailer->message['to'][0]['email'] == "john@example.com");
     }
 
     /** @test */
@@ -22,7 +22,7 @@ class MandrillMailableTest extends TestCase
         $mailer = new MandrillMailer();
         $mailer->name("John Doe");
 
-        $this->assertTrue($mailer->message['to']['name'] == "John Doe");
+        $this->assertTrue($mailer->message['to'][0]['name'] == "John Doe");
     }
 
     /** @test */

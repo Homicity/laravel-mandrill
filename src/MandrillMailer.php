@@ -46,12 +46,12 @@ class MandrillMailer
     public function __call($method, $args)
     {
         if ($method == 'to') {
-            $this->message['to']['email'] = $args[0];
+            $this->message['to'][0]['email'] = $args[0];
             return $this;
         }
 
         if ($method == 'name') {
-            $this->message['to']['name'] = $args[0];
+            $this->message['to'][0]['name'] = $args[0];
             return $this;
         }
 
@@ -107,11 +107,11 @@ class MandrillMailer
             'subject'           => '',
             'from_email'        => config('mandrill.from_email'),
             'from_name'         => config('mandrill.from_name'),
-            'to'                => [
+            'to'                => [[
                 'email' => '',
                 'name'  => '',
                 'type'  => 'to',
-            ],
+            ]],
             'important'         => false,
             'merge'             => true,
             'merge_language'    => 'handlebars',
