@@ -10,7 +10,12 @@ php artisan vendor:publish --provider="Homicity\MandrillMailable\Providers\Mandr
 ```
 
 ### Config
-TODO
+Add into your .env file
+```$xslt
+MANDRILL_SECRET={your mandrill api key}
+MANDRILL_FROM_EMAIL={your from email address}
+MANDRILL_FROM_NAME={your from name}
+```
 
 ### Usage
 
